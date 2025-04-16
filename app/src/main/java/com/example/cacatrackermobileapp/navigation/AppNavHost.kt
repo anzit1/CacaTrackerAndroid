@@ -1,6 +1,10 @@
 package com.example.cacatrackermobileapp.navigation
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -8,34 +12,72 @@ import com.example.cacatrackermobileapp.ui.login.LoginScreen
 import com.example.cacatrackermobileapp.ui.mainuser.MainUserScreen
 import com.example.cacatrackermobileapp.ui.registrar.RegistrarScreen
 
-object Routes {
-    const val LOGIN = "login"
-    const val REGISTER = "register"
-    const val MAINSCREEN = "mainscreen"
-    const val CREARINCIDENCIA = "nuevaincidencia"
-    const val TUSINCIDENCIAS = "misincidencias"
-    const val TODASINCIDENCIAS = "todasincidencias"
-    const val ESTADISTICAS = "estadisticas"
+
+sealed class Route {
+    data class LoginScreen(val name: String = "Login") : Route()
+    data class RegistrarScreen(val name: String = "Registrar") : Route()
+    data class MainScreen(val name: String = "Main") : Route()
+    //data class LoginScreen(val name:String):Route()
+    //data class LoginScreen(val name:String):Route()
+
 }
 
+
+
 @Composable
-fun AppNavHost(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Routes.LOGIN) {
-        composable(Routes.LOGIN) {
+fun AppNavHost(navHostController: NavHostController) {
+
+    NavHost(
+        navController = navHostController,
+        startDestination = Route.LoginScreen().name
+    ) {
+
+        composable(route = Route.LoginScreen().name) {
             LoginScreen(
-                navController = navController,
-                onRegisterClick = { navController.navigate(Routes.REGISTER) }
+                onRegisterClick = {
+                    navHostController.navigateToSingleTop(
+                        Route.RegistrarScreen().name
+                    )
+                },
+                onLoginClick = {
+                    navHostController.navigate(
+                        Route.MainScreen().name
+                    )
+                }
             )
         }
-        composable(Routes.REGISTER) {
+
+        composable(route = Route.RegistrarScreen().name) {
             RegistrarScreen(
-                onBackToLogin = { navController.popBackStack() }
+                onCrearCuentaClick = {},
+
+                onBackToLogin = {
+                    navHostController.navigateToSingleTop(
+                        Route.LoginScreen().name
+                    )
+                }
             )
         }
-        composable(Routes.MAINSCREEN) {
+
+        composable(route = Route.MainScreen().name) {
             MainUserScreen(
-                onBackToLogin = { navController.popBackStack() }
+                onLogOutClick = {},
+                onTusIncidenciasClick = {},
+                onTodasIncidenciasClick = {},
+                onCrearIncidenciaClick = {},
+                onEstadisticasClick = {}
             )
         }
+
+    }
+}
+
+fun NavController.navigateToSingleTop(route:String){
+    navigate(route){
+        popUpTo(graph.findStartDestination().id){
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
     }
 }

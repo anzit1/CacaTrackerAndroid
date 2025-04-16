@@ -1,6 +1,5 @@
 package com.example.cacatrackermobileapp.ui.login
 
-import android.view.View
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,20 +16,15 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.cacatrackermobileapp.R
 import com.example.cacatrackermobileapp.ui.components.HeaderText
 import com.example.cacatrackermobileapp.ui.components.LoginTextField
@@ -42,20 +36,10 @@ val itemSpacing = 8.dp
 
 @Composable
 fun LoginScreen(
-    navController: NavController,
     viewModel: LoginViewModel = viewModel(),
-    onRegisterClick: () -> Unit = {}
+    onRegisterClick: () -> Unit,
+    onLoginClick: () -> Unit
 ) {
-
-    LaunchedEffect(viewModel.isLoginSuccessful) {
-        if (viewModel.isLoginSuccessful.value) {
-            navController.navigate("mainscreen") {
-                popUpTo("login") { inclusive = true } // Ensure login screen is removed from back stack
-            }
-        }
-    }
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -110,12 +94,17 @@ fun LoginScreen(
         }
 
         Spacer(Modifier.height(itemSpacing * 3))
-        Button(onClick = {
-            viewModel.login()
-        }, modifier = Modifier.fillMaxWidth()) {
+
+        // ** LOGIN **
+        //
+        Button(
+            onClick = onLoginClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text("Login")
         }
-
+        // ** REGISTRAR **
+        //
         Button(
             onClick = onRegisterClick,
             modifier = Modifier.fillMaxWidth()
@@ -129,6 +118,6 @@ fun LoginScreen(
 @Composable
 fun PrevLoginScreen() {
     CacaTrackerMobileAppTheme {
-        LoginScreen(navController = rememberNavController())
+        LoginScreen(LoginViewModel(),{},{})
     }
 }

@@ -1,17 +1,21 @@
 package com.example.cacatrackermobileapp.data.models
 
+import com.google.gson.annotations.SerializedName
 import java.util.Objects
 
 data class Users(
-    var id: Int? = null,
-    var username: String? = null,
-    var password: String? = null,
-    var codigopostal: String? = null,
-    var codigoactiva: String? = null,
-    var email: String? = null,
-    var recuperapass: String? = null,
-    var activado: Boolean = false,
-    var incidenciasCollection: List<Incidencias>? = null
+    val id: Int? = null,
+    val username: String? = null,
+    @SerializedName(value = "password")
+    val password: String? = null,
+    val codigopostal: String? = null,
+    @SerializedName(value = "codigoactiva")
+    val codigoactiva: String? = null,
+    val email: String? = null,
+    @SerializedName(value = "recuperapass")
+    val recuperapass: String? = null,
+    val activado: Boolean = false,
+    val incidenciasCollection: List<Incidencias>? = null
 ) {
 
     override fun equals(other: Any?): Boolean {

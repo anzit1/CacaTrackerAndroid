@@ -1,5 +1,6 @@
 package com.example.cacatrackermobileapp.ui.registrar
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,12 +21,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.cacatrackermobileapp.R
+import com.example.cacatrackermobileapp.navigation.Route
 import com.example.cacatrackermobileapp.ui.components.HeaderText
 import com.example.cacatrackermobileapp.ui.components.LoginTextField
 import com.example.cacatrackermobileapp.ui.login.defaultPadding
@@ -37,8 +40,11 @@ import com.example.cacatrackermobileapp.viewmodels.RegistrarViewModel
 @Composable
 fun RegistrarScreen(
     viewModel: RegistrarViewModel = viewModel(),
-    onBackToLogin: () -> Unit = {}
+    onBackToLogin: () -> Unit,
+    onCrearCuentaClick:() -> Unit
 ) {
+
+    val context = LocalContext.current
 
     val dialogMessage by viewModel.dialogMessage
 
@@ -123,6 +129,8 @@ fun RegistrarScreen(
             Button(
                 onClick = {
                     viewModel.validateForm()
+                    onCrearCuentaClick()
+                    Toast.makeText(context, "Cuenta creada!", Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -160,6 +168,6 @@ fun RegistrarScreen(
 @Composable
 fun RegistrarPreview() {
     CacaTrackerMobileAppTheme {
-        RegistrarScreen()
+        RegistrarScreen(RegistrarViewModel(),{},{})
     }
 }
