@@ -1,6 +1,7 @@
 package com.example.cacatrackermobileapp.ui.login
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.cacatrackermobileapp.R
+import com.example.cacatrackermobileapp.ui.components.ButtonCT
 import com.example.cacatrackermobileapp.ui.components.HeaderText
 import com.example.cacatrackermobileapp.ui.components.LoginTextField
 import com.example.cacatrackermobileapp.ui.theme.CacaTrackerMobileAppTheme
@@ -46,7 +48,6 @@ fun LoginScreen(
             .padding(defaultPadding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         HeaderText(
             text = null,
             image = painterResource(id = R.drawable.logo),
@@ -94,23 +95,15 @@ fun LoginScreen(
         }
 
         Spacer(Modifier.height(itemSpacing * 3))
-
         // ** LOGIN **
         //
-        Button(
-            onClick = onLoginClick,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Login")
-        }
+        ButtonCT(null, "Login", onLoginClick)
+
+        Spacer(Modifier.height(itemSpacing * 3))
         // ** REGISTRAR **
         //
-        Button(
-            onClick = onRegisterClick,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Crear cuenta")
-        }
+        ButtonCT(null, "Crear cuenta", onRegisterClick)
+
     }
 }
 
@@ -118,6 +111,6 @@ fun LoginScreen(
 @Composable
 fun PrevLoginScreen() {
     CacaTrackerMobileAppTheme {
-        LoginScreen(LoginViewModel(),{},{})
+        LoginScreen(LoginViewModel(), {}, {})
     }
 }
