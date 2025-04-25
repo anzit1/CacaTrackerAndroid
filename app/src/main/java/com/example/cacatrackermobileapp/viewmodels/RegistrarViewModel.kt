@@ -11,15 +11,34 @@ class RegistrarViewModel: ViewModel() {
     val password = mutableStateOf("")
     val repetePassword = mutableStateOf("")
 
-    // Validations
     val isFormValid = mutableStateOf(false)
     val dialogMessage = mutableStateOf("")
 
-    // Allowed codigo postal list
     val allowedCodigosPostales = setOf( "03559", "03540", "03114", "03016", "03015", "03014", "03013", "03012", "03011",
         "03010", "03009", "03008", "03007", "03006", "03005", "03004", "03003", "03002", "03001")
 
-    // Form validation
+    fun onCodigoPostalChange(newValue: String) {
+        if (newValue.length <= 5 && newValue.all { it.isDigit() }) {
+            codigoPostal.value = newValue
+        }
+    }
+
+    fun onPasswordChange(newValue: String) {
+        password.value = newValue
+    }
+
+    fun onRepetePasswordChange(newValue: String) {
+        repetePassword.value = newValue
+    }
+
+    fun onEmailChange(newValue: String) {
+        email.value = newValue
+    }
+
+    fun onUsernameChange(newValue: String) {
+        username.value = newValue
+    }
+
     fun validateForm() {
         val isEmailValid = android.util.Patterns.EMAIL_ADDRESS.matcher(email.value).matches()
         val isCpValid = codigoPostal.value in allowedCodigosPostales
@@ -28,7 +47,6 @@ class RegistrarViewModel: ViewModel() {
 
         isFormValid.value = isEmailValid && isCpValid && doPasswordsMatch && areFieldsFilled
 
-        // Set appropriate dialog message
         dialogMessage.value = when {
             !isEmailValid -> "Correo electrónico inválido."
             !isCpValid -> "Codigo postal inválido."

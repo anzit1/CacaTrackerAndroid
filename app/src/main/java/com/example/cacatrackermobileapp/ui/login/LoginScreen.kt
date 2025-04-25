@@ -1,7 +1,7 @@
 package com.example.cacatrackermobileapp.ui.login
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,22 +9,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.cacatrackermobileapp.R
 import com.example.cacatrackermobileapp.ui.components.ButtonCT
@@ -45,7 +45,9 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(defaultPadding),
+            .padding(defaultPadding)
+            .background(Color(0xFFf7f7f7))
+            .systemBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         HeaderText(
@@ -97,7 +99,7 @@ fun LoginScreen(
         Spacer(Modifier.height(itemSpacing * 3))
         // ** LOGIN **
         //
-        ButtonCT(null, "Login", onLoginClick)
+        ButtonCT(null, "Login", { onLoginClick() })
 
         Spacer(Modifier.height(itemSpacing * 3))
         // ** REGISTRAR **
@@ -105,6 +107,8 @@ fun LoginScreen(
         ButtonCT(null, "Crear cuenta", onRegisterClick)
 
     }
+
+
 }
 
 @Preview(showBackground = true)

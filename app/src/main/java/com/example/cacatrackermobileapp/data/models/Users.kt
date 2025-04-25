@@ -15,7 +15,7 @@ data class Users(
     @SerializedName(value = "recuperapass")
     val recuperapass: String? = null,
     val activado: Boolean = false,
-    val incidenciasCollection: List<Incidencias>? = null
+    //val incidenciasCollection: List<Incidencias>? = null
 ) {
 
     override fun equals(other: Any?): Boolean {

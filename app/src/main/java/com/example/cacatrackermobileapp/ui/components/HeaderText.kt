@@ -19,10 +19,10 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun HeaderText(
-    text:String?,
+    text: String?,
     image: Painter,
     modifier: Modifier = Modifier
-){
+) {
 
 
     Column(
@@ -34,9 +34,9 @@ fun HeaderText(
             painter = image,
             contentDescription = "Header Image",
             modifier = Modifier
-                .size(230.dp),
-
-            contentScale = ContentScale.Fit
+                .size(260.dp)
+                .fillMaxWidth(),
+            contentScale = ContentScale.FillWidth
         )
         if (text != null) {
             Text(

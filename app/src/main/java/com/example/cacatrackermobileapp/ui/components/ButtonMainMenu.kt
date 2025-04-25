@@ -15,45 +15,29 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun ButtonCT(
-    size: Int?,
+    size: Int? = null,
     text: String,
-    onClickFunction: () -> Unit
+    onClickFunction1: () -> Unit,
+    onClickFunction2: (() -> Unit)? = null
 ) {
-    if (size == null) {
-        Button(
-            onClick = onClickFunction,
-            modifier = Modifier
-                .width(280.dp)
-                .height(60.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Gray
-            ),
-            shape = RoundedCornerShape(8.dp)
-
-        ) {
-            Text(
-                text = text,
-                color = Color.White,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-    } else {
-        Button(
-            onClick = onClickFunction,
-            modifier = Modifier.width(size.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Gray
-            ),
-            shape = RoundedCornerShape(8.dp)
-
-        ) {
-            Text(
-                text = text,
-                color = Color.White,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
+    Button(
+        onClick = {
+            onClickFunction1()
+            onClickFunction2?.invoke()
+        },
+        modifier = Modifier
+            .width((size ?: 280).dp)
+            .height(60.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Gray
+        ),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Text(
+            text = text,
+            color = Color.White,
+            fontSize = if (size == null) 24.sp else 20.sp,
+            fontWeight = FontWeight.Bold
+        )
     }
 }

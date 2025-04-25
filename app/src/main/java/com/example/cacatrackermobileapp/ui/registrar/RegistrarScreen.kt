@@ -1,7 +1,8 @@
 package com.example.cacatrackermobileapp.ui.registrar
 
-import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
@@ -21,127 +24,119 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.cacatrackermobileapp.R
-import com.example.cacatrackermobileapp.navigation.Route
+import com.example.cacatrackermobileapp.ui.components.ButtonCT
 import com.example.cacatrackermobileapp.ui.components.HeaderText
 import com.example.cacatrackermobileapp.ui.components.LoginTextField
 import com.example.cacatrackermobileapp.ui.login.defaultPadding
 import com.example.cacatrackermobileapp.ui.login.itemSpacing
 import com.example.cacatrackermobileapp.ui.theme.CacaTrackerMobileAppTheme
-
 import com.example.cacatrackermobileapp.viewmodels.RegistrarViewModel
 
 @Composable
 fun RegistrarScreen(
     viewModel: RegistrarViewModel = viewModel(),
     onBackToLogin: () -> Unit,
-    onCrearCuentaClick:() -> Unit
+    onCrearCuentaClick: () -> Unit
 ) {
-
-    val context = LocalContext.current
 
     val dialogMessage by viewModel.dialogMessage
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(defaultPadding),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(Color(0xFFf7f7f7))
+            .systemBarsPadding()
     ) {
-        HeaderText(
-            text = null,
-            image = painterResource(id = R.drawable.logo),
+        Box(
             modifier = Modifier
-                .padding(vertical = defaultPadding)
-                .align(alignment = Alignment.Start)
-        )
-
-        LoginTextField(
-            value = viewModel.username.value,
-            onValueChange = {
-                viewModel.username.value = it
-            },
-            labelText = "Username",
-            leadingIcon = Icons.Default.Person,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(Modifier.height(itemSpacing))
-        LoginTextField(
-            value = viewModel.email.value,
-            onValueChange = {
-                viewModel.email.value = it
-            },
-            labelText = "Email",
-            leadingIcon = Icons.Default.Email,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(Modifier.height(itemSpacing))
-        LoginTextField(
-            value = viewModel.codigoPostal.value,
-            onValueChange = { newValue ->
-                if (newValue.length <= 5 && newValue.all { it.isDigit() }) {
-                    viewModel.codigoPostal.value = newValue
-                }
-            },
-            labelText = "Codigo Postal",
-            leadingIcon = Icons.Default.Home,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(Modifier.height(itemSpacing))
-        LoginTextField(
-            value = viewModel.password.value,
-            onValueChange = {
-                viewModel.password.value = it
-            },
-            labelText = "Password",
-            leadingIcon = Icons.Default.Lock,
-            modifier = Modifier.fillMaxWidth(),
-            keyboardType = KeyboardType.Password,
-            visualTransformation = PasswordVisualTransformation()
-        )
-
-        Spacer(Modifier.height(itemSpacing))
-        LoginTextField(
-            value = viewModel.repetePassword.value,
-            onValueChange = {
-                viewModel.repetePassword.value = it
-            },
-            labelText = "Repetir password",
-            leadingIcon = Icons.Default.Lock,
-            modifier = Modifier.fillMaxWidth(),
-            keyboardType = KeyboardType.Password,
-            visualTransformation = PasswordVisualTransformation()
-        )
-        Spacer(Modifier.height(itemSpacing * 2))
-
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth()
         ) {
-            Button(
-                onClick = {
-                    viewModel.validateForm()
-                    onCrearCuentaClick()
-                    Toast.makeText(context, "Cuenta creada!", Toast.LENGTH_SHORT).show()
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Crear cuenta")
-            }
+            HeaderText(
+                text = null,
+                image = painterResource(id = R.drawable.logo),
+                modifier = Modifier
+                    .padding(vertical = defaultPadding)
+                    .align(alignment = Alignment.Center)
+            )
         }
-        Button(
-            onClick = onBackToLogin,
-            modifier = Modifier.fillMaxWidth()
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(1f)
+                .padding(defaultPadding),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Volver")
+
+            LoginTextField(
+                value = viewModel.username.value,
+                onValueChange = viewModel::onUsernameChange,
+                labelText = "Username",
+                leadingIcon = Icons.Default.Person,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(Modifier.height(itemSpacing))
+            LoginTextField(
+                value = viewModel.email.value,
+                onValueChange = viewModel::onEmailChange,
+                labelText = "Email",
+                leadingIcon = Icons.Default.Email,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(Modifier.height(itemSpacing))
+            LoginTextField(
+                value = viewModel.codigoPostal.value,
+                onValueChange = viewModel::onCodigoPostalChange,
+                labelText = "Codigo Postal",
+                leadingIcon = Icons.Default.Home,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(Modifier.height(itemSpacing))
+            LoginTextField(
+                value = viewModel.password.value,
+                onValueChange = viewModel::onPasswordChange,
+                labelText = "Password",
+                leadingIcon = Icons.Default.Lock,
+                modifier = Modifier.fillMaxWidth(),
+                keyboardType = KeyboardType.Password,
+                visualTransformation = PasswordVisualTransformation()
+            )
+
+            Spacer(Modifier.height(itemSpacing))
+            LoginTextField(
+                value = viewModel.repetePassword.value,
+                onValueChange = viewModel::onRepetePasswordChange,
+                labelText = "Repetir password",
+                leadingIcon = Icons.Default.Lock,
+                modifier = Modifier.fillMaxWidth(),
+                keyboardType = KeyboardType.Password,
+                visualTransformation = PasswordVisualTransformation()
+            )
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ButtonCT(170, "Crear cuenta", onCrearCuentaClick) { viewModel.validateForm() }
+                Spacer(Modifier.width(10.dp))
+                ButtonCT(170, "Volver", onBackToLogin, null)
+            }
         }
     }
 
@@ -163,11 +158,10 @@ fun RegistrarScreen(
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun RegistrarPreview() {
     CacaTrackerMobileAppTheme {
-        RegistrarScreen(RegistrarViewModel(),{},{})
+        RegistrarScreen(RegistrarViewModel(), {}, {})
     }
 }
