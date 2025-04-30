@@ -1,5 +1,9 @@
 [versions]
+accompanistPermissions = "0.28.0"
+accompanistPermissionsVersion = "0.24.13-rc"
 agp = "8.6.0"
+cameraCamera2 = "1.4.2"
+cameraCamera2androidxWear = "wear"
 kotlin = "1.9.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -11,6 +15,15 @@ composeBom = "2024.04.01"
 firebaseCrashlyticsBuildtools = "3.0.3"
 
 [libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
+accompanist-permissions-v02413rc = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissionsVersion" }
+androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCamera2" }
+androidx-camera-camera2androidx-wear = { module = "androidx.camera:camera-camera2androidx.wear", version.ref = "cameraCamera2androidxWear" }
+androidx-camera-extensionandroidx-wear = { module = "androidx.camera:camera-extensionandroidx.wear", version.ref = "cameraCamera2androidxWear" }
+androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraCamera2" }
+androidx-camera-lifecycleandroidx-wear = { module = "androidx.camera:camera-lifecycleandroidx.wear", version.ref = "cameraCamera2androidxWear" }
+androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraCamera2" }
+androidx-camera-voewandroidx-wear = { module = "androidx.camera:camera-voewandroidx.wear", version.ref = "cameraCamera2androidxWear" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

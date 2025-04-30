@@ -19,8 +19,10 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +50,10 @@ fun RegistrarScreen(
 ) {
 
     val dialogMessage by viewModel.dialogMessage
+    val isFormValid by viewModel.isFormValid
+    val loading by viewModel.isLoading.collectAsState()
+
+
 
     Column(
         modifier = Modifier
@@ -55,6 +61,17 @@ fun RegistrarScreen(
             .background(Color(0xFFf7f7f7))
             .systemBarsPadding()
     ) {
+        if (loading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0x80000000))
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+        }
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -62,6 +79,7 @@ fun RegistrarScreen(
             HeaderText(
                 text = null,
                 image = painterResource(id = R.drawable.logo),
+                null,
                 modifier = Modifier
                     .padding(vertical = defaultPadding)
                     .align(alignment = Alignment.Center)
@@ -133,9 +151,14 @@ fun RegistrarScreen(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ButtonCT(170, "Crear cuenta", onCrearCuentaClick) { viewModel.validateForm() }
+                ButtonCT(170, null,"Crear cuenta", onCrearCuentaClick) {
+                    viewModel.validateForm()
+                    if(isFormValid){
+                        viewModel.registrarUser()
+                    }
+                }
                 Spacer(Modifier.width(10.dp))
-                ButtonCT(170, "Volver", onBackToLogin, null)
+                ButtonCT(170, null,"Volver", onBackToLogin, null)
             }
         }
     }
@@ -143,7 +166,7 @@ fun RegistrarScreen(
     if (dialogMessage.isNotEmpty()) {
         AlertDialog(
             onDismissRequest = {},
-            title = { Text("Error") },
+            title = { Text(viewModel.dialogTitle.value) },
             text = { Text(dialogMessage) },
             confirmButton = {
                 Button(

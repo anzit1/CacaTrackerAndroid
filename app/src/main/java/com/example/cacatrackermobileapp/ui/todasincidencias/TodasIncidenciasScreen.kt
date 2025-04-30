@@ -1,22 +1,41 @@
 package com.example.cacatrackermobileapp.ui.todasincidencias
 
+
+import android.graphics.BitmapFactory
+import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.cacatrackermobileapp.R
+import com.example.cacatrackermobileapp.data.models.Incidencias
 import com.example.cacatrackermobileapp.ui.components.BotInfoBar
 import com.example.cacatrackermobileapp.ui.components.TopInfoBar
 import com.example.cacatrackermobileapp.ui.theme.CacaTrackerMobileAppTheme
@@ -26,51 +45,126 @@ import com.example.cacatrackermobileapp.viewmodels.TodasIncViewModel
 fun TodasIncidenciasScreen(
     viewModel: TodasIncViewModel = viewModel(),
     onVolverClick: () -> Unit
-    ) {
+) {
+    viewModel.check()
+    val incidencias by viewModel.incidencias.collectAsState()
+    val loading by viewModel.loading.collectAsState()
 
-    val incidencias = emptyList<String>()
+    LaunchedEffect(viewModel) {
+        viewModel.cargaIncidencias()
+    }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFE6E6E6))
             .systemBarsPadding()
     ) {
+        TopInfoBar("Todas incidencias")
 
-        TopInfoBar("Todas incidencias", "manolo")
-
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 20.dp)
-        ) {
-            items(incidencias) { incidencia ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 5.dp),
-                    elevation = CardDefaults.cardElevation(4.dp)
-                ) {
-                    Text(
-                        text = incidencia,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
+        if (loading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0x80000000))
+                    .align(Alignment.Center)
+            ) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center)) // Show progress indicator
             }
         }
 
-        BotInfoBar("Volver", onVolverClick)
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    top = 56.dp,
+                    bottom = 72.dp
+                ),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(incidencias) { incidencia ->
+                IncidenciaItem(incidencia)
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+        ) {
+            BotInfoBar("Volver", onVolverClick)
+        }
+    }
+
+}
+
+
+@Composable
+fun IncidenciaItem(incidencia: Incidencias) {
+
+    val context = LocalContext.current
+    val defaultBitmap =
+        BitmapFactory.decodeResource(context.resources, R.drawable.logo).asImageBitmap()
+    Log.d("TusIncidencias", "foto size: ${incidencia.foto?.size}")
+    incidencia.foto?.let {
+        try {
+            BitmapFactory.decodeByteArray(it, 0, it.size).asImageBitmap()
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    Card(
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .background(Color(0xFFF9F9F9))
+                .padding(12.dp)
+        ) {
+            val imageBitmap = incidencia.foto?.let {
+                try {
+                    BitmapFactory.decodeByteArray(it, 0, it.size)
+                        .asImageBitmap()
+                } catch (e: Exception) {
+                    null
+                }
+            }
+            Log.d("TodasIncidencias", "foto size: ${incidencia.foto?.size}")
+            Image(
+                bitmap = imageBitmap ?: defaultBitmap,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(100.dp)
+                    .padding(end = 16.dp)
+            )
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Dirección: ${incidencia.direccion}")
+                Text("Código Postal: ${incidencia.codigopostal}")
+                Text(
+                    "Nombre artístico: ${incidencia.nombreartistico}",
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
     }
 }
 
 
 @Preview(showBackground = true)
 @Composable
-fun TodasIncidenciasPreview() {
+fun TusIncidenciasPreview() {
     CacaTrackerMobileAppTheme {
         TodasIncidenciasScreen(
+            TodasIncViewModel(),
             onVolverClick = {}
-
         )
     }
 }

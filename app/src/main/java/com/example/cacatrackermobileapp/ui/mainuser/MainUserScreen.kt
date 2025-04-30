@@ -43,11 +43,11 @@ fun MainUserScreen(
     onTusIncidenciasClick: () -> Unit,
     onTodasIncidenciasClick: () -> Unit,
 ) {
-
+    viewModel.check()
     Column(modifier = Modifier.fillMaxSize()
         .systemBarsPadding()) {
 
-        TopInfoBar("Menu principal", UserSession.userName)
+        TopInfoBar("Menu principal")
 
         Column(
             modifier = Modifier
@@ -57,13 +57,13 @@ fun MainUserScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ButtonCT(null, "Crear incidencia", onCrearIncidenciaClick)
+            ButtonCT(null,null, "Crear incidencia", onCrearIncidenciaClick)
             Spacer(Modifier.height(itemSpacing))
-            ButtonCT(null, "Tus incidencias", onTusIncidenciasClick)
+            ButtonCT(null,null, "Tus incidencias", onTusIncidenciasClick)
             Spacer(Modifier.height(itemSpacing))
-            ButtonCT(null, "Todas incidencias", onTodasIncidenciasClick)
+            ButtonCT(null,null, "Todas incidencias", onTodasIncidenciasClick)
             Spacer(Modifier.height(itemSpacing))
-            ButtonCT(null, "Ver estadisticas", onEstadisticasClick)
+            ButtonCT(null,null, "Ver estadisticas", onEstadisticasClick)
         }
 
         BotInfoBar("Logout",onLogOutClick)

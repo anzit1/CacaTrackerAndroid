@@ -14,10 +14,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+
 @Composable
-fun ButtonCT(
-    sizeW: Int? = null,
-    sizeH: Int? = null,
+fun ButtonPQ(
+    size: Int? = null,
     text: String,
     onClickFunction1: () -> Unit,
     onClickFunction2: (() -> Unit)? = null
@@ -28,8 +28,8 @@ fun ButtonCT(
             onClickFunction2?.invoke()
         },
         modifier = Modifier
-            .width((sizeW ?: 280).dp)
-            .height((sizeH ?: 60).dp),
+            .width((size ?: 280).dp)
+            .height(33.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Gray
         ),
@@ -38,7 +38,7 @@ fun ButtonCT(
         Text(
             text = text,
             color = Color.White,
-            fontSize = if (sizeW == null) 24.sp else 20.sp,
+            fontSize = if (size == null) 18.sp else 16.sp,
             fontWeight = FontWeight.Bold
         )
     }
@@ -46,6 +46,6 @@ fun ButtonCT(
 
 @Preview
 @Composable
-fun ButtonCTPreview(){
-    ButtonCT(130, 80,"TextoEx",{},{})
+fun ButtonPQPreview(){
+    ButtonPQ(95,"Borrar",{},{})
 }

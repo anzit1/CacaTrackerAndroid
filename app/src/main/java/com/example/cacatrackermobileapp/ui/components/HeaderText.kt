@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 fun HeaderText(
     text: String?,
     image: Painter,
+    size: Int?,
     modifier: Modifier = Modifier
 ) {
 
@@ -34,7 +35,7 @@ fun HeaderText(
             painter = image,
             contentDescription = "Header Image",
             modifier = Modifier
-                .size(260.dp)
+                .size((size ?: 260).dp)
                 .fillMaxWidth(),
             contentScale = ContentScale.FillWidth
         )

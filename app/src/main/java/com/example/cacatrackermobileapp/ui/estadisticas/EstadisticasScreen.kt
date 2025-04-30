@@ -46,7 +46,7 @@ fun EstadisticaScreen(
                 )
             )
     ) {
-        TopInfoBar("Estadísticas", "manolo")
+        TopInfoBar("Estadísticas")
 
         Row(
             modifier = Modifier
@@ -69,9 +69,9 @@ fun EstadisticaScreen(
                     fontWeight = FontWeight.Black,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
-                ButtonCT(null, "Código Postal", { })
+                ButtonCT(null,null, "Código Postal", { })
                 Spacer(modifier = Modifier.height(8.dp))
-                ButtonCT(null, "Calles/Avenidas", { })
+                ButtonCT(null,null, "Calles/Avenidas", { })
             }
 
             Column(
@@ -90,9 +90,9 @@ fun EstadisticaScreen(
                     fontWeight = FontWeight.Black,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
-                ButtonCT(null, "Código Postal", { })
+                ButtonCT(null,null, "Código Postal", { })
                 Spacer(modifier = Modifier.height(8.dp))
-                ButtonCT(null, "Calles/Avenidas", { })
+                ButtonCT(null, null,"Calles/Avenidas", { })
             }
         }
 

@@ -1,5 +1,10 @@
 package com.example.cacatrackermobileapp.ui.crearincidencia
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,27 +33,130 @@ import com.example.cacatrackermobileapp.ui.components.ButtonCT
 import com.example.cacatrackermobileapp.ui.components.TopInfoBar
 import com.example.cacatrackermobileapp.ui.theme.CacaTrackerMobileAppTheme
 import android.net.Uri
+import android.os.Build
 import androidx.compose.runtime.getValue
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import coil.compose.rememberAsyncImagePainter
+import com.example.cacatrackermobileapp.ui.components.ButtonPQImg
 import com.example.cacatrackermobileapp.viewmodels.CrearIncViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
+@SuppressLint("ContextCastToActivity")
 @Composable
 fun CrearIncidenciaScreen(
     viewModel: CrearIncViewModel = viewModel(),
     onVolverClick: () -> Unit
 ) {
     val context = LocalContext.current
+    val activity = LocalContext.current as Activity
     val dialogMessage by viewModel.dialogMessage
     val selectedImageUri = viewModel.selectedImageUri.value
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+    val scope = rememberCoroutineScope()
+
+
+
+    val pickMediaLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
-        viewModel.subirFoto(uri,context)
+        if (uri != null) {
+            try {
+                context.contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+                viewModel.subirFoto(uri, context)
+            } catch (e: Exception) {
+                viewModel.dialogMessage.value = "Error al acceder a la imagen: ${e.localizedMessage}"
+            }
+        }
+    }
+
+    // Permission launcher
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            scope.launch {
+                pickMediaLauncher.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            }
+        } else {
+            viewModel.dialogMessage.value = "Permission denied. You can't select images without permission."
+        }
+    }
+
+
+
+    // Function to handle image selection with permission check
+    fun handleImageSelection() {
+        val permissionToRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Manifest.permission.READ_MEDIA_IMAGES
+        } else {
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        }
+
+        when {
+            ContextCompat.checkSelfPermission(
+                context,
+                permissionToRequest
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                scope.launch {
+                    pickMediaLauncher.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+                }
+            }
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                activity,
+                permissionToRequest
+            ) -> {
+                // Show rationale dialog
+                scope.launch {
+                    viewModel.dialogMessage.value =
+                        "The app needs permission to access your photos to select images. " +
+                                "Please grant the permission in the next dialog."
+                    // Request permission after user acknowledges the rationale
+                    delay(1000) // Small delay to ensure dialog is shown
+                    permissionLauncher.launch(permissionToRequest)
+                }
+            }
+            else -> {
+                permissionLauncher.launch(permissionToRequest)
+            }
+        }
+    }
+
+    val isLoading by viewModel.isLoading
+    if (isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0x88000000)),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
     }
 
     Column(
@@ -58,7 +166,7 @@ fun CrearIncidenciaScreen(
             .background(Color(0xFFD1D1D1))
     ) {
 
-        TopInfoBar("Crear incidencia", "manolo")
+        TopInfoBar("Crear incidencia")
 
         Column(
             modifier = Modifier
@@ -91,9 +199,13 @@ fun CrearIncidenciaScreen(
                     )
                 }
                 Spacer(modifier = Modifier.height(24.dp))
-                ButtonCT(150, "Subir foto", {
-                    imagePickerLauncher.launch("image/*")
-                })
+
+                ButtonPQImg(
+                    200,
+                    "Seleccionar Foto",
+                    { handleImageSelection() },
+                    Icons.Default.Search
+                )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -135,24 +247,40 @@ fun CrearIncidenciaScreen(
                         value = viewModel.codigoPostalInput.value,
                         onValueChange = viewModel::onCodigoPostalChange,
                         placeholder = { Text("00000") },
-                        enabled = false,
+                        enabled = true,
                         modifier = Modifier.weight(1f)
                     )
                 }
+                if (viewModel.filteredAddresses.isNotEmpty()) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.White)
+                            .border(1.dp, Color.Gray)
+                    ) {
+                        items(viewModel.filteredAddresses) { address ->
+                            Text(
+                                text = address,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        viewModel.onSuggestionSelected(address)
+                                    }
+                                    .padding(8.dp)
+                            )
+                        }
+                    }
+                }
+
 
                 Spacer(modifier = Modifier.height(24.dp))
                 Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
-                    //mal de momento
-                    ButtonCT(170, "Crear", onVolverClick, null)
-                    //mal de momento
+                    ButtonCT(170, null, "Crear", { viewModel.crearIncidencia(context) })
                 }
-
             }
         }
         BotInfoBar("Volver", onVolverClick)
     }
-
-
 
     if (dialogMessage.isNotEmpty()) {
         AlertDialog(
@@ -170,8 +298,25 @@ fun CrearIncidenciaScreen(
             }
         )
     }
-
 }
+
+@Composable
+fun SelectPhotoButton(viewModel: CrearIncViewModel) {
+    val context = LocalContext.current
+
+    val pickMediaLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            viewModel.subirFoto(uri, context)
+        }
+    }
+
+    ButtonPQImg(200, "Seleccionar Foto", {
+        pickMediaLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    }, Icons.Default.Search)
+}
+
 
 @Preview(showBackground = true)
 @Composable

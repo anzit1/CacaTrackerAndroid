@@ -14,11 +14,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.cacatrackermobileapp.data.models.UserSession
+import com.example.cacatrackermobileapp.data.models.Users
 
 @Composable
 fun TopInfoBar(
-    text: String,
-    user: String?
+    text: String
 ) {
     Box(
         modifier = Modifier
@@ -34,10 +35,12 @@ fun TopInfoBar(
                 text = text,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Black)
             )
-            Text(
-                text = "User: $user",
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Black)
-            )
+            if(UserSession.username != null){
+                Text(
+                    text = "User: ${UserSession.username}",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Black)
+                )
+            }
         }
     }
 }
