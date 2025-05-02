@@ -131,7 +131,9 @@ fun AppNavHost(navHostController: NavHostController) {
                 viewModel = viewModel,
                 onLogOutClick = {
                     viewModel.logout()
-                    navHostController.navigate(Route.LoginScreen().name)
+                    navHostController.navigate(Route.LoginScreen().name){
+                        popUpTo(0) { inclusive = true }
+                    }
                 },
                 onTusIncidenciasClick = {
                     navHostController.navigate(Route.TusIncScreen().name)

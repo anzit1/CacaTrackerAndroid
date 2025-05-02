@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.cacatrackermobileapp.data.api.RetrofitClient
 import com.example.cacatrackermobileapp.data.models.Incidencias
 import com.example.cacatrackermobileapp.data.models.UserSession
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -21,14 +20,9 @@ class TusIncViewModel : ViewModel() {
 
     val username = UserSession.username
     val userId = UserSession.id
-    private val objectMapper = jacksonObjectMapper()
-
-    fun check() {
-        Log.e("SCREEN", "Tus incidnecias screen")
-    }
 
     fun cargaIncidencias() {
-        Log.e("ViewModel", "cargaIncidencias() called")
+
         viewModelScope.launch {
             _loading.value = true
             try {
@@ -45,6 +39,18 @@ class TusIncViewModel : ViewModel() {
                 _loading.value = false
             }
         }
+    }
+
+    fun sortIncidenciasByFechaCreacion() {
+        _incidencias.value = _incidencias.value.sortedBy { it.fechacreacion }
+    }
+
+    fun sortIncidenciasByNombreArtistico() {
+        _incidencias.value = _incidencias.value.sortedBy { it.nombreartistico?.lowercase() }
+    }
+
+    fun sortIncidenciasByCodigoPostal() {
+        _incidencias.value = _incidencias.value.sortedBy { it.codigopostal }
     }
 
     fun deleteIncidencia(id: Long, onSuccess: () -> Unit) {

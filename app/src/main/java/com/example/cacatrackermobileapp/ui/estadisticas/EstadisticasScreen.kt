@@ -1,13 +1,12 @@
 package com.example.cacatrackermobileapp.ui.estadisticas
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,18 +23,31 @@ import com.example.cacatrackermobileapp.ui.components.BotInfoBar
 import com.example.cacatrackermobileapp.ui.components.ButtonCT
 import com.example.cacatrackermobileapp.ui.components.TopInfoBar
 import com.example.cacatrackermobileapp.ui.theme.CacaTrackerMobileAppTheme
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.cacatrackermobileapp.data.models.CodigoPostalCountDTO
+import com.example.cacatrackermobileapp.data.models.DireccionCountDTO
+import com.example.cacatrackermobileapp.data.models.UserSession
+import com.example.cacatrackermobileapp.utils.PieChart
 import com.example.cacatrackermobileapp.viewmodels.EstadisticasViewModel
 
 @Composable
 fun EstadisticaScreen(
     viewModel: EstadisticasViewModel = viewModel(),
-    onVolverClick: () -> Unit,
-    graphContent: @Composable () -> Unit = {}
+    onVolverClick: () -> Unit
 ) {
+    val codigoPostalData by viewModel.codigoPostalData.collectAsState()
+    val direccionData by viewModel.direccionData.collectAsState()
+    Log.d("Estadisticas", "Codigo Postal Data: $codigoPostalData")
+    //Controla tipo de grafico
+    var selectedChart by remember { mutableStateOf("none") }
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -69,9 +81,19 @@ fun EstadisticaScreen(
                     fontWeight = FontWeight.Black,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
-                ButtonCT(null,null, "Código Postal", { })
+                ButtonCT(null, null, "Código Postal", {
+                    UserSession.id?.let {
+                        viewModel.fetchTop5CpByUser(it)
+                        selectedChart = "user_cp"
+                    }
+                })
                 Spacer(modifier = Modifier.height(8.dp))
-                ButtonCT(null,null, "Calles/Avenidas", { })
+                ButtonCT(null, null, "Calles/Avenidas", {
+                    UserSession.id?.let {
+                        viewModel.fetchTop5DirByUser(it)
+                        selectedChart = "user_dir"
+                    }
+                })
             }
 
             Column(
@@ -90,9 +112,15 @@ fun EstadisticaScreen(
                     fontWeight = FontWeight.Black,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
-                ButtonCT(null,null, "Código Postal", { })
+                ButtonCT(null, null, "Código Postal", {
+                    viewModel.fetchTop5CpGlobal()
+                    selectedChart = "global_cp"
+                })
                 Spacer(modifier = Modifier.height(8.dp))
-                ButtonCT(null, null,"Calles/Avenidas", { })
+                ButtonCT(null, null, "Calles/Avenidas", {
+                    viewModel.fetchTop5DirGlobal()
+                    selectedChart = "global_dir"
+                })
             }
         }
 
@@ -102,7 +130,11 @@ fun EstadisticaScreen(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            SimpleGraph()
+            when (selectedChart) {
+                "user_cp", "global_cp" -> CodigoPostalGraph(codigoPostalData)
+                "user_dir", "global_dir" -> DireccionGraph(direccionData)
+                else -> Text("Seleccione una opción para ver el gráfico.")
+            }
         }
 
         BotInfoBar("Volver", onVolverClick)
@@ -110,48 +142,47 @@ fun EstadisticaScreen(
 }
 
 @Composable
-fun SimpleGraph() {
-    val barHeights = listOf(80, 120, 60, 150, 100) // Example values
+fun CodigoPostalGraph(data: List<CodigoPostalCountDTO>) {
+    if (data.isEmpty()) {
+        Text("No hay datos disponibles.")
+        return
+    }
 
-    Column(
+    val pieData = data.associate { it.codigopostal to it.total }
+    Log.d("Estadisticas", "Codigo Postal Data: $pieData")
+    PieChart(
+        data = pieData,
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-    ) {
-        Text("Ejemplo de gráfico", fontWeight = FontWeight.Bold)
+    )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-        ) {
-            barHeights.forEach { height ->
-                Canvas(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                        .padding(horizontal = 4.dp)
-                ) {
-                    drawRect(
-                        color = Color.Blue,
-                        topLeft = Offset(0f, size.height - height),
-                        size = androidx.compose.ui.geometry.Size(size.width, height.toFloat())
-                    )
-                }
-            }
-        }
-    }
 }
+
+@Composable
+fun DireccionGraph(data: List<DireccionCountDTO>) {
+    if (data.isEmpty()) {
+        Text("No hay datos disponibles.")
+        return
+    }
+
+    val pieData = data.associate { it.direccion to it.total }
+    Log.d("Estadisticas", "Direcciones Data: $pieData")
+    PieChart(
+        data = pieData,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    )
+}
+
 
 @Preview(showBackground = true)
 @Composable
 fun EstadisticaPreview() {
     CacaTrackerMobileAppTheme {
         EstadisticaScreen(
-            onVolverClick = {},
-            graphContent = { SimpleGraph() })
+            onVolverClick = {}
+        )
     }
 }

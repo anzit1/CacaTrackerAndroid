@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -37,9 +39,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.cacatrackermobileapp.R
 import com.example.cacatrackermobileapp.data.models.Incidencias
 import com.example.cacatrackermobileapp.ui.components.BotInfoBar
+import com.example.cacatrackermobileapp.ui.components.ButtonPQ
 import com.example.cacatrackermobileapp.ui.components.TopInfoBar
 import com.example.cacatrackermobileapp.ui.theme.CacaTrackerMobileAppTheme
 import com.example.cacatrackermobileapp.viewmodels.TodasIncViewModel
+import java.text.SimpleDateFormat
 
 @Composable
 fun TodasIncidenciasScreen(
@@ -60,7 +64,24 @@ fun TodasIncidenciasScreen(
             .background(Color(0xFFE6E6E6))
             .systemBarsPadding()
     ) {
-        TopInfoBar("Todas incidencias")
+        Column {
+            TopInfoBar("Tus incidencias")
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    "Ordenar por: ",
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    fontWeight = FontWeight.Bold
+                )
+                ButtonPQ(100, "Fecha", { viewModel.sortIncidenciasByFechaCreacion() })
+                ButtonPQ(110, "Nombre", { viewModel.sortIncidenciasByNombreArtistico() })
+                ButtonPQ(155, "Codigo Postal", { viewModel.sortIncidenciasByCodigoPostal() })
+            }
+        }
 
         if (loading) {
             Box(
@@ -78,7 +99,7 @@ fun TodasIncidenciasScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(
-                    top = 56.dp,
+                    top = 85.dp,
                     bottom = 72.dp
                 ),
             contentPadding = PaddingValues(16.dp),
@@ -152,6 +173,10 @@ fun IncidenciaItem(incidencia: Incidencias) {
                     "Nombre artístico: ${incidencia.nombreartistico}",
                     fontWeight = FontWeight.Bold
                 )
+                val sdf = SimpleDateFormat("dd/MM/yyyy")
+                val formattedDate =
+                    if ((incidencia.fechacreacion != null)) sdf.format(incidencia.fechacreacion) else "No disponible"
+                Text("Fecha creacion: $formattedDate")
             }
         }
     }

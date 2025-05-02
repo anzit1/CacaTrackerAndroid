@@ -6,13 +6,7 @@ import com.example.cacatrackermobileapp.data.models.UserSession
 
 class MainUserViewModel: ViewModel() {
 
-fun check(){
-    Log.d("SCREEN", "MainUserPage")
-}
-
-
     fun logout() {
         UserSession.clearUserInfo()
     }
-
 }

@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object RetrofitClient {
     // private const val BASE_URL = "http://10.0.2.2:8080/cacatrackerapi/rest/"
     //private const val BASE_URL ="http://192.168.1.134:8080/cacatrackerapi/rest/"
-    private const val BASE_URL ="https://f4ec-2a0c-5a82-150e-cf00-6548-b4d0-b05c-1b1d.ngrok-free.app/cacatrackerapi/rest/"
+    private const val BASE_URL ="http://89c6-2a0c-5a82-150e-cf00-981e-6444-20f5-9625.ngrok-free.app/cacatrackerapi/rest/"
 
     val api: ApiService by lazy {
         Retrofit.Builder()

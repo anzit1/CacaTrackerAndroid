@@ -36,14 +36,12 @@ val itemSpacing = 30.dp
 
 @Composable
 fun MainUserScreen(
-    viewModel: MainUserViewModel = viewModel(),
     onLogOutClick: () -> Unit,
     onCrearIncidenciaClick: () -> Unit,
     onEstadisticasClick: () -> Unit,
     onTusIncidenciasClick: () -> Unit,
     onTodasIncidenciasClick: () -> Unit,
 ) {
-    viewModel.check()
     Column(modifier = Modifier.fillMaxSize()
         .systemBarsPadding()) {
 
@@ -75,6 +73,6 @@ fun MainUserScreen(
 @Composable
 fun PreviewMainUserScreen() {
     CacaTrackerMobileAppTheme {
-        MainUserScreen(MainUserViewModel(), {}, {}, {}, {}, {})
+        MainUserScreen({}, {}, {}, {}, {})
     }
 }

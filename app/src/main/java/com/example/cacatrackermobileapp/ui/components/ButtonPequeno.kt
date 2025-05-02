@@ -29,7 +29,7 @@ fun ButtonPQ(
         },
         modifier = Modifier
             .width((size ?: 280).dp)
-            .height(33.dp),
+            .height(35.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Gray
         ),
@@ -46,6 +46,12 @@ fun ButtonPQ(
 
 @Preview
 @Composable
-fun ButtonPQPreview(){
+fun ButtonPQPreview1(){
     ButtonPQ(95,"Borrar",{},{})
+}
+
+@Preview
+@Composable
+fun ButtonPQPreview2(){
+    ButtonPQ(155,"Codigo Postal",{},{})
 }

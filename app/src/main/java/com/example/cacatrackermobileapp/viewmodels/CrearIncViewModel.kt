@@ -1,8 +1,8 @@
 package com.example.cacatrackermobileapp.viewmodels
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Base64
 import android.util.Log
@@ -13,9 +13,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.cacatrackermobileapp.data.api.RetrofitClient
 import com.example.cacatrackermobileapp.data.models.Direccion
 import com.example.cacatrackermobileapp.data.models.UserSession
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -90,7 +89,6 @@ class CrearIncViewModel : ViewModel() {
         if (uri != null) {
             val inputStream = context.contentResolver.openInputStream(uri)
             val byteArray = inputStream?.use { it.readBytes() }
-
         }
     }
 
@@ -119,21 +117,20 @@ class CrearIncViewModel : ViewModel() {
             return
         }
 
-
         val requestData = mutableMapOf<String, String>()
         requestData["username"] = username ?: ""
         requestData["direccion"] = direccionInput.value
         requestData["nombreArtistico"] = nombreArtInput.value
         requestData["codigoPostal"] = codigoPostalInput.value
 
-        // Encode image if available
-         selectedImageUri.value?.let { uri ->
-             val encodedImage = encodeImageToBase64(uri, context)
-             encodedImage?.let {
-                 requestData["imagenCodificada64"] = it
-                 Log.d("Base64EncodedImage", "Encoded Image:  ${encodedImage.substring(0, minOf(50, encodedImage.length))}")
-             }
-         }
+        selectedImageUri.value?.let { uri ->
+            val encodedImage = compressAndEncodeImage(uri, context)
+            encodedImage?.let {
+                requestData["imagenCodificada64"] = it
+                Log.d("Base64EncodedImage", "Encoded Image:  ${it.substring(0, minOf(50, it.length))}")
+            }
+        }
+
         isLoading.value = true
 
         viewModelScope.launch {
@@ -146,7 +143,6 @@ class CrearIncViewModel : ViewModel() {
                         dialogMessage.value = "Incidencia creada con éxito."
                     }
 
-                    // Clear form after successful submission
                     nombreArtInput.value = ""
                     direccionInput.value = ""
                     codigoPostalInput.value = ""
@@ -165,6 +161,32 @@ class CrearIncViewModel : ViewModel() {
             } finally {
                 isLoading.value = false
             }
+        }
+    }
+
+    private fun compressAndEncodeImage(uri: Uri, context: Context, maxBytes: Long = 10 * 1024 * 1024): String? {
+        try {
+            val inputStream = context.contentResolver.openInputStream(uri)
+            val originalBitmap = BitmapFactory.decodeStream(inputStream)
+            inputStream?.close()
+
+            val resizedBitmap = Bitmap.createScaledBitmap(originalBitmap, 1024, 1024, true)
+            val outputStream = ByteArrayOutputStream()
+            var quality = 100
+            var byteArray: ByteArray
+
+            do {
+                outputStream.reset()
+                resizedBitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
+                byteArray = outputStream.toByteArray()
+                quality -= 5
+            } while (byteArray.size > maxBytes && quality > 10)
+
+            return Base64.encodeToString(byteArray, Base64.NO_WRAP)
+
+        } catch (e: Exception) {
+            Log.e("ImageCompress", "Error compressing image: ${e.message}")
+            return null
         }
     }
 }
