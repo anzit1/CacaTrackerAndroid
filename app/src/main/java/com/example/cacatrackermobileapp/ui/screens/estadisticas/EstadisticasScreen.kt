@@ -1,4 +1,4 @@
-package com.example.cacatrackermobileapp.ui.estadisticas
+package com.example.cacatrackermobileapp.ui.screens.estadisticas
 
 import android.util.Log
 import androidx.compose.runtime.Composable

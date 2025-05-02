@@ -13,13 +13,15 @@ import androidx.lifecycle.viewModelScope
 import com.example.cacatrackermobileapp.data.api.RetrofitClient
 import com.example.cacatrackermobileapp.data.models.Direccion
 import com.example.cacatrackermobileapp.data.models.UserSession
+import com.example.cacatrackermobileapp.data.repository.DireccionesRepositoryImpl
+import com.example.cacatrackermobileapp.domain.repository.DireccionesRepository
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 
-class CrearIncViewModel : ViewModel() {
+class CrearIncViewModel() : ViewModel() {
 
     val username = UserSession.username
     val direccionInput = mutableStateOf("")
@@ -27,6 +29,7 @@ class CrearIncViewModel : ViewModel() {
     val nombreArtInput = mutableStateOf("")
     val selectedImageUri = mutableStateOf<Uri?>(null)
     val dialogMessage = mutableStateOf("")
+    val dialogTitle = mutableStateOf("Error")
     val isLoading = mutableStateOf(false)
 
     private val _listaDeCalles = mutableStateListOf<Direccion>()
@@ -131,15 +134,16 @@ class CrearIncViewModel : ViewModel() {
             }
         }
 
-        isLoading.value = true
-
         viewModelScope.launch {
             try {
+                isLoading.value = true
                 val response = RetrofitClient.api.createIncidencia(requestData)
                 if (response.isSuccessful) {
                     response.body()?.let {
+                        dialogTitle.value = "Exito"
                         dialogMessage.value = it["message"] ?: "Incidencia creada con éxito."
                     } ?: run {
+                        dialogTitle.value = "Exito"
                         dialogMessage.value = "Incidencia creada con éxito."
                     }
 

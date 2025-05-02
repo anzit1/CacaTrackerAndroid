@@ -9,8 +9,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.example.cacatrackermobileapp.navigation.AppNavHost
-import com.example.cacatrackermobileapp.ui.login.LoginScreen
+import com.example.cacatrackermobileapp.ui.navigation.AppNavHost
+import com.example.cacatrackermobileapp.ui.screens.login.LoginScreen
 import com.example.cacatrackermobileapp.ui.theme.CacaTrackerMobileAppTheme
 
 class MainActivity : ComponentActivity() {

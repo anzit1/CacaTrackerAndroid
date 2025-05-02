@@ -1,4 +1,4 @@
-package com.example.cacatrackermobileapp.ui.mainuser
+package com.example.cacatrackermobileapp.ui.screens.mainuser
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

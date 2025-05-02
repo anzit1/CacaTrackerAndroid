@@ -1,4 +1,4 @@
-package com.example.cacatrackermobileapp.ui.registrar
+package com.example.cacatrackermobileapp.ui.screens.registrar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -37,8 +37,8 @@ import com.example.cacatrackermobileapp.R
 import com.example.cacatrackermobileapp.ui.components.ButtonCT
 import com.example.cacatrackermobileapp.ui.components.HeaderText
 import com.example.cacatrackermobileapp.ui.components.LoginTextField
-import com.example.cacatrackermobileapp.ui.login.defaultPadding
-import com.example.cacatrackermobileapp.ui.login.itemSpacing
+import com.example.cacatrackermobileapp.ui.screens.login.defaultPadding
+import com.example.cacatrackermobileapp.ui.screens.login.itemSpacing
 import com.example.cacatrackermobileapp.ui.theme.CacaTrackerMobileAppTheme
 import com.example.cacatrackermobileapp.viewmodels.RegistrarViewModel
 

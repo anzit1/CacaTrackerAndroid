@@ -1,4 +1,4 @@
-package com.example.cacatrackermobileapp.ui.crearincidencia
+package com.example.cacatrackermobileapp.ui.screens.crearincidencia
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -73,7 +73,7 @@ fun CrearIncidenciaScreen(
     val selectedImageUri = viewModel.selectedImageUri.value
     val scope = rememberCoroutineScope()
 
-
+    val isLoading by viewModel.isLoading
 
     val pickMediaLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
@@ -86,7 +86,8 @@ fun CrearIncidenciaScreen(
                 )
                 viewModel.subirFoto(uri, context)
             } catch (e: Exception) {
-                viewModel.dialogMessage.value = "Error al acceder a la imagen: ${e.localizedMessage}"
+                viewModel.dialogMessage.value =
+                    "Error al acceder a la imagen: ${e.localizedMessage}"
             }
         }
     }
@@ -102,10 +103,10 @@ fun CrearIncidenciaScreen(
                 )
             }
         } else {
-            viewModel.dialogMessage.value = "Permission denied. You can't select images without permission."
+            viewModel.dialogMessage.value =
+                "Permission denied. You can't select images without permission."
         }
     }
-
 
 
     // Function to handle image selection with permission check
@@ -127,6 +128,7 @@ fun CrearIncidenciaScreen(
                     )
                 }
             }
+
             ActivityCompat.shouldShowRequestPermissionRationale(
                 activity,
                 permissionToRequest
@@ -141,162 +143,165 @@ fun CrearIncidenciaScreen(
                     permissionLauncher.launch(permissionToRequest)
                 }
             }
+
             else -> {
                 permissionLauncher.launch(permissionToRequest)
             }
         }
     }
 
-    val isLoading by viewModel.isLoading
-    if (isLoading) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0x88000000)),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
-        }
-    }
+    Box(modifier = Modifier.fillMaxSize()) {
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .systemBarsPadding()
-            .background(Color(0xFFD1D1D1))
-    ) {
-
-        TopInfoBar("Crear incidencia")
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .weight(1f)
-                .padding(12.dp)
+                .systemBarsPadding()
+                .background(Color(0xFFD1D1D1))
         ) {
+
+            TopInfoBar("Crear incidencia")
+
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxSize()
+                    .weight(1f)
+                    .padding(12.dp)
             ) {
-                if (selectedImageUri != null) {
-                    Image(
-                        painter = rememberAsyncImagePainter(selectedImageUri),
-                        contentDescription = "Imagen seleccionada",
-                        modifier = Modifier
-                            .size(155.dp)
-                            .background(Color.White)
-                    )
-                } else {
-                    Image(
-                        painter = rememberAsyncImagePainter(selectedImageUri),
-                        contentDescription = "Imagen seleccionada",
-                        modifier = Modifier
-                            .size(155.dp)
-                            .background(Color.White)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    if (selectedImageUri != null) {
+                        Image(
+                            painter = rememberAsyncImagePainter(selectedImageUri),
+                            contentDescription = "Imagen seleccionada",
+                            modifier = Modifier
+                                .size(155.dp)
+                                .background(Color.White)
+                        )
+                    } else {
+                        Image(
+                            painter = rememberAsyncImagePainter(selectedImageUri),
+                            contentDescription = "Imagen seleccionada",
+                            modifier = Modifier
+                                .size(155.dp)
+                                .background(Color.White)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    ButtonPQImg(
+                        200,
+                        "Seleccionar Foto",
+                        { handleImageSelection() },
+                        Icons.Default.Search
                     )
                 }
+
                 Spacer(modifier = Modifier.height(24.dp))
-
-                ButtonPQImg(
-                    200,
-                    "Seleccionar Foto",
-                    { handleImageSelection() },
-                    Icons.Default.Search
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-            Column(
-                modifier = Modifier
-                    .background(Color(0xFFD1D1D1))
-                    .padding(16.dp)
-                    .weight(2f)
-            ) {
-                Text(
-                    text = "Nombre Artístico",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Black)
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-                TextField(
-                    value = viewModel.nombreArtInput.value,
-                    onValueChange = viewModel::onNombreArtisticoChange,
-                    placeholder = { Text("Escribe un nombre a la pieza") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = "Direccion",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Black)
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-                Row {
-                    TextField(
-                        value = viewModel.direccionInput.value,
-                        onValueChange = viewModel::onDireccionChange,
-                        placeholder = { Text("Escribe la direccion") },
-                        modifier = Modifier.weight(2f)
+                Column(
+                    modifier = Modifier
+                        .background(Color(0xFFD1D1D1))
+                        .padding(16.dp)
+                        .weight(2f)
+                ) {
+                    Text(
+                        text = "Nombre Artístico",
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Black)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Spacer(modifier = Modifier.height(4.dp))
                     TextField(
-                        value = viewModel.codigoPostalInput.value,
-                        onValueChange = viewModel::onCodigoPostalChange,
-                        placeholder = { Text("00000") },
-                        enabled = true,
-                        modifier = Modifier.weight(1f)
+                        value = viewModel.nombreArtInput.value,
+                        onValueChange = viewModel::onNombreArtisticoChange,
+                        placeholder = { Text("Escribe un nombre a la pieza") },
+                        modifier = Modifier.fillMaxWidth()
                     )
-                }
-                if (viewModel.filteredAddresses.isNotEmpty()) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.White)
-                            .border(1.dp, Color.Gray)
-                    ) {
-                        items(viewModel.filteredAddresses) { address ->
-                            Text(
-                                text = address,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        viewModel.onSuggestionSelected(address)
-                                    }
-                                    .padding(8.dp)
-                            )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "Direccion",
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Black)
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row {
+                        TextField(
+                            value = viewModel.direccionInput.value,
+                            onValueChange = viewModel::onDireccionChange,
+                            placeholder = { Text("Escribe la direccion") },
+                            modifier = Modifier.weight(2f)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        TextField(
+                            value = viewModel.codigoPostalInput.value,
+                            onValueChange = viewModel::onCodigoPostalChange,
+                            placeholder = { Text("00000") },
+                            enabled = true,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    if (viewModel.filteredAddresses.isNotEmpty()) {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color.White)
+                                .border(1.dp, Color.Gray)
+                        ) {
+                            items(viewModel.filteredAddresses) { address ->
+                                Text(
+                                    text = address,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            viewModel.onSuggestionSelected(address)
+                                        }
+                                        .padding(8.dp)
+                                )
+                            }
                         }
                     }
-                }
 
 
-                Spacer(modifier = Modifier.height(24.dp))
-                Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
-                    ButtonCT(170, null, "Crear", { viewModel.crearIncidencia(context) })
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                        ButtonCT(170, null, "Crear", { viewModel.crearIncidencia(context) })
+                    }
                 }
+            }
+            BotInfoBar("Volver", onVolverClick)
+        }
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0x88000000)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
         }
-        BotInfoBar("Volver", onVolverClick)
-    }
 
-    if (dialogMessage.isNotEmpty()) {
-        AlertDialog(
-            onDismissRequest = {},
-            title = { Text("Error") },
-            text = { Text(dialogMessage) },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        viewModel.dialogMessage.value = ""
+        if (dialogMessage.isNotEmpty()) {
+            AlertDialog(
+                onDismissRequest = {},
+                title = { viewModel.dialogTitle.value },
+                text = { Text(dialogMessage) },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            viewModel.dialogMessage.value = ""
+                        }
+                    ) {
+                        Text("OK")
                     }
-                ) {
-                    Text("OK")
                 }
-            }
-        )
+            )
+        }
     }
 }
 

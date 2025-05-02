@@ -1,8 +1,9 @@
-package com.example.cacatrackermobileapp.ui.todasincidencias
+package com.example.cacatrackermobileapp.ui.screens.tusincidencias
 
-
+import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -42,15 +43,15 @@ import com.example.cacatrackermobileapp.ui.components.BotInfoBar
 import com.example.cacatrackermobileapp.ui.components.ButtonPQ
 import com.example.cacatrackermobileapp.ui.components.TopInfoBar
 import com.example.cacatrackermobileapp.ui.theme.CacaTrackerMobileAppTheme
-import com.example.cacatrackermobileapp.viewmodels.TodasIncViewModel
+import com.example.cacatrackermobileapp.viewmodels.TusIncViewModel
 import java.text.SimpleDateFormat
 
 @Composable
-fun TodasIncidenciasScreen(
-    viewModel: TodasIncViewModel = viewModel(),
+fun TusIncidenciasScreen(
+    viewModel: TusIncViewModel = viewModel(),
     onVolverClick: () -> Unit
 ) {
-    viewModel.check()
+    val context = LocalContext.current
     val incidencias by viewModel.incidencias.collectAsState()
     val loading by viewModel.loading.collectAsState()
 
@@ -90,10 +91,9 @@ fun TodasIncidenciasScreen(
                     .background(Color(0x80000000))
                     .align(Alignment.Center)
             ) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center)) // Show progress indicator
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
         }
-
 
         LazyColumn(
             modifier = Modifier
@@ -106,7 +106,14 @@ fun TodasIncidenciasScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(incidencias) { incidencia ->
-                IncidenciaItem(incidencia)
+                IncidenciaItem(incidencia) {
+                    incidencia.id?.let {
+                        viewModel.deleteIncidencia(it) {
+                            Toast.makeText(context, "Incidencia borrada.", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
+                }
             }
         }
 
@@ -114,28 +121,32 @@ fun TodasIncidenciasScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
+                .padding(16.dp)
         ) {
-            BotInfoBar("Volver", onVolverClick)
+            BotInfoBar(
+                "Volver",
+                onVolverClick
+            )
         }
     }
-
 }
 
-
+@SuppressLint("SimpleDateFormat")
 @Composable
-fun IncidenciaItem(incidencia: Incidencias) {
+fun IncidenciaItem(incidencia: Incidencias, onDelete: () -> Unit) {
 
     val context = LocalContext.current
     val defaultBitmap =
         BitmapFactory.decodeResource(context.resources, R.drawable.logo).asImageBitmap()
-    Log.d("TusIncidencias", "foto size: ${incidencia.foto?.size}")
-    incidencia.foto?.let {
-        try {
+
+
+    val imageBitmap = try {
+        incidencia.foto?.let {
             BitmapFactory.decodeByteArray(it, 0, it.size).asImageBitmap()
-        } catch (e: Exception) {
-            null
         }
-    }
+    } catch (e: Exception) {
+        null
+    } ?: defaultBitmap
 
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -147,17 +158,8 @@ fun IncidenciaItem(incidencia: Incidencias) {
                 .background(Color(0xFFF9F9F9))
                 .padding(12.dp)
         ) {
-            val imageBitmap = incidencia.foto?.let {
-                try {
-                    BitmapFactory.decodeByteArray(it, 0, it.size)
-                        .asImageBitmap()
-                } catch (e: Exception) {
-                    null
-                }
-            }
-            Log.d("TodasIncidencias", "foto size: ${incidencia.foto?.size}")
             Image(
-                bitmap = imageBitmap ?: defaultBitmap,
+                bitmap = imageBitmap,
                 contentDescription = null,
                 modifier = Modifier
                     .size(100.dp)
@@ -167,16 +169,37 @@ fun IncidenciaItem(incidencia: Incidencias) {
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Dirección: ${incidencia.direccion}")
-                Text("Código Postal: ${incidencia.codigopostal}")
-                Text(
-                    "Nombre artístico: ${incidencia.nombreartistico}",
-                    fontWeight = FontWeight.Bold
-                )
+                Row {
+                    Text("Dirección: ", fontWeight = FontWeight.Bold)
+                    Text("${incidencia.direccion}")
+                }
+
+                Row {
+                    Text("Código Postal: ", fontWeight = FontWeight.Bold)
+                    Text("${incidencia.codigopostal}")
+                }
+
+                Row {
+                    Text("Nombre artístico: ", fontWeight = FontWeight.Bold)
+                    Text("${incidencia.nombreartistico}")
+                }
+                Log.d("Fecha",incidencia.fechacreacion.toString())
                 val sdf = SimpleDateFormat("dd/MM/yyyy")
                 val formattedDate =
-                    if ((incidencia.fechacreacion != null)) sdf.format(incidencia.fechacreacion) else "No disponible"
-                Text("Fecha creacion: $formattedDate")
+                    if ((incidencia.fechacreacion != null)) incidencia.fechacreacion?.let {
+                        sdf.format(
+                            it
+                        )
+                    } else "No disponible"
+                Row {
+                    Text("Fecha creacion: ", fontWeight = FontWeight.Bold)
+                    if (formattedDate != null) {
+                        Text(formattedDate)
+                    }
+                }
+                Row(modifier = Modifier.align(Alignment.End)) {
+                    ButtonPQ(95, "Borrar", { onDelete() })
+                }
             }
         }
     }
@@ -187,8 +210,8 @@ fun IncidenciaItem(incidencia: Incidencias) {
 @Composable
 fun TusIncidenciasPreview() {
     CacaTrackerMobileAppTheme {
-        TodasIncidenciasScreen(
-            TodasIncViewModel(),
+        TusIncidenciasScreen(
+            TusIncViewModel(),
             onVolverClick = {}
         )
     }

@@ -6,11 +6,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.cacatrackermobileapp.data.api.RetrofitClient
 import com.example.cacatrackermobileapp.data.models.Incidencias
 import com.example.cacatrackermobileapp.data.models.UserSession
+import com.example.cacatrackermobileapp.data.repository.IncidenciasRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class TusIncViewModel : ViewModel() {
+
+    private val repository = IncidenciasRepositoryImpl()
 
     private val _incidencias = MutableStateFlow<List<Incidencias>>(emptyList())
     val incidencias: StateFlow<List<Incidencias>> = _incidencias
@@ -26,13 +29,8 @@ class TusIncViewModel : ViewModel() {
         viewModelScope.launch {
             _loading.value = true
             try {
-                val response = RetrofitClient.api.getIncidenciasByUserId(userId!!)
-                if (response.isSuccessful) {
-                    _incidencias.value = response.body() ?: emptyList()
-                    Log.e("API", "Exito: ${response.message()}")
-                } else {
-                    Log.e("API", "Error: ${response.errorBody()?.string()}")
-                }
+                val response = repository.getIncidenciasByUserId(userId!!)
+                _incidencias.value = response
             } catch (e: Exception) {
                 Log.e("API", "Exception: ${e.message}")
             } finally {
@@ -57,19 +55,15 @@ class TusIncViewModel : ViewModel() {
         viewModelScope.launch {
             _loading.value = true
             try {
-                val response = RetrofitClient.api.deleteIncidencia(id)
-                if (response.isSuccessful) {
+                val success = repository.deleteIncidencia(id)
+                if (success) {
                     _incidencias.value = _incidencias.value.filter { it.id != id }
-                    Log.e("API", "Exito: ${response.message()}")
                     onSuccess()
                 } else {
-                    Log.e("API", "Error: ${response.errorBody()?.string()}")
+                    Log.e("API", "Error al eliminar incidencia")
                 }
             } catch (e: Exception) {
                 Log.e("API", "Exception: ${e.message}")
-
-            } catch (e: Exception) {
-                e.printStackTrace()
             } finally {
                 _loading.value = false
             }

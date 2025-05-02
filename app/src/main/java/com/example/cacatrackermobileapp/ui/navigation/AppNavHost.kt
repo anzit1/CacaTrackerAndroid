@@ -1,4 +1,4 @@
-package com.example.cacatrackermobileapp.navigation
+package com.example.cacatrackermobileapp.ui.navigation
 
 import android.util.Log
 import androidx.compose.runtime.Composable
@@ -10,14 +10,14 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.cacatrackermobileapp.ui.crearincidencia.CrearIncidenciaScreen
-import com.example.cacatrackermobileapp.ui.login.LoginScreen
-import com.example.cacatrackermobileapp.ui.mainuser.MainUserScreen
-import com.example.cacatrackermobileapp.ui.registrar.RegistrarScreen
-import com.example.cacatrackermobileapp.ui.tusincidencias.TusIncidenciasScreen
-import com.example.cacatrackermobileapp.ui.todasincidencias.TodasIncidenciasScreen
-import com.example.cacatrackermobileapp.ui.estadisticas.EstadisticaScreen
-import com.example.cacatrackermobileapp.ui.login.ResetPasswordScreen
+import com.example.cacatrackermobileapp.ui.screens.crearincidencia.CrearIncidenciaScreen
+import com.example.cacatrackermobileapp.ui.screens.login.LoginScreen
+import com.example.cacatrackermobileapp.ui.screens.mainuser.MainUserScreen
+import com.example.cacatrackermobileapp.ui.screens.registrar.RegistrarScreen
+import com.example.cacatrackermobileapp.ui.screens.tusincidencias.TusIncidenciasScreen
+import com.example.cacatrackermobileapp.ui.screens.todasincidencias.TodasIncidenciasScreen
+import com.example.cacatrackermobileapp.ui.screens.estadisticas.EstadisticaScreen
+import com.example.cacatrackermobileapp.ui.screens.resetpass.ResetPasswordScreen
 import com.example.cacatrackermobileapp.viewmodels.LoginViewModel
 import com.example.cacatrackermobileapp.viewmodels.MainUserViewModel
 
@@ -128,7 +128,6 @@ fun AppNavHost(navHostController: NavHostController) {
         composable(route = Route.MainScreen().name) {
             val viewModel: MainUserViewModel = viewModel()
             MainUserScreen(
-                viewModel = viewModel,
                 onLogOutClick = {
                     viewModel.logout()
                     navHostController.navigate(Route.LoginScreen().name){
