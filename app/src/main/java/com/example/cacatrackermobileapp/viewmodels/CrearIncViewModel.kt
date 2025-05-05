@@ -39,6 +39,18 @@ class CrearIncViewModel() : ViewModel() {
         loadAddresses()
     }
 
+    fun createImageUri(context: Context): Uri {
+        val contentValues = android.content.ContentValues().apply {
+            put(android.provider.MediaStore.Images.Media.DISPLAY_NAME, "captured_image_${System.currentTimeMillis()}.jpg")
+            put(android.provider.MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+        }
+
+        return context.contentResolver.insert(
+            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            contentValues
+        )!!
+    }
+
     private fun loadAddresses() {
         viewModelScope.launch {
             try {

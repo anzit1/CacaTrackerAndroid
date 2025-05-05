@@ -78,9 +78,9 @@ fun TusIncidenciasScreen(
                     modifier = Modifier.align(Alignment.CenterVertically),
                     fontWeight = FontWeight.Bold
                 )
-                ButtonPQ(100, "Fecha", { viewModel.sortIncidenciasByFechaCreacion() })
-                ButtonPQ(110, "Nombre", { viewModel.sortIncidenciasByNombreArtistico() })
-                ButtonPQ(155, "Codigo Postal", { viewModel.sortIncidenciasByCodigoPostal() })
+                ButtonPQ(100, null,"Fecha", { viewModel.sortIncidenciasByFechaCreacion() })
+                ButtonPQ(110, null,"Nombre", { viewModel.sortIncidenciasByNombreArtistico() })
+                ButtonPQ(155, null,"Codigo Postal", { viewModel.sortIncidenciasByCodigoPostal() })
             }
         }
 
@@ -198,7 +198,7 @@ fun IncidenciaItem(incidencia: Incidencias, onDelete: () -> Unit) {
                     }
                 }
                 Row(modifier = Modifier.align(Alignment.End)) {
-                    ButtonPQ(95, "Borrar", { onDelete() })
+                    ButtonPQ(95, null,"Borrar", { onDelete() })
                 }
             }
         }

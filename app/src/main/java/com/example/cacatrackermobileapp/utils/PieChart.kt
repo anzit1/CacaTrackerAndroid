@@ -51,10 +51,10 @@ fun PieChart(
         val floatValue = data.values.map { 360f * it / totalSum }
 
         val colors = listOf(
-            Color(0xFF263238),
-            Color(0xFF455A64),
-            Color(0xFF607D8B),
-            Color(0xFF78909C),
+            Color(0xFFCEC658),
+            Color(0xFF3F7DE0),
+            Color(0xFFE7514E),
+            Color(0xFF6EE050),
             Color(0xFF90A4AE)
         )
 

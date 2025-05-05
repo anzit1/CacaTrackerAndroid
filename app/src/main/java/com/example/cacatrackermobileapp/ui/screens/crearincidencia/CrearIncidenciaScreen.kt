@@ -44,11 +44,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
@@ -150,6 +154,34 @@ fun CrearIncidenciaScreen(
         }
     }
 
+    val cameraImageUri = remember { mutableStateOf<Uri?>(null) }
+
+    val takePictureLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+            cameraImageUri.value?.let { uri ->
+                viewModel.subirFoto(uri, context)
+            }
+        }
+    }
+
+    fun handleCameraCapture() {
+        val permission = Manifest.permission.CAMERA
+
+        if (ContextCompat.checkSelfPermission(
+                context,
+                permission
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            val uri = viewModel.createImageUri(context)
+            cameraImageUri.value = uri
+            takePictureLauncher.launch(uri)
+        } else {
+            permissionLauncher.launch(permission)
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
 
 
@@ -193,13 +225,21 @@ fun CrearIncidenciaScreen(
                         )
                     }
                     Spacer(modifier = Modifier.height(24.dp))
-
-                    ButtonPQImg(
-                        200,
-                        "Seleccionar Foto",
-                        { handleImageSelection() },
-                        Icons.Default.Search
-                    )
+                    Row {
+                        ButtonPQImg(
+                            160,
+                            "Tomar Foto",
+                            { handleCameraCapture() },
+                            Icons.Default.AddCircle
+                        )
+                        Spacer(modifier = Modifier.width(20.dp))
+                        ButtonPQImg(
+                            160,
+                            "Buscar Foto",
+                            { handleImageSelection() },
+                            Icons.Default.Search
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -275,6 +315,9 @@ fun CrearIncidenciaScreen(
             }
             BotInfoBar("Volver", onVolverClick)
         }
+
+
+
         if (isLoading) {
             Box(
                 modifier = Modifier

@@ -29,10 +29,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.focus.focusModifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.cacatrackermobileapp.data.models.CodigoPostalCountDTO
 import com.example.cacatrackermobileapp.data.models.DireccionCountDTO
 import com.example.cacatrackermobileapp.data.models.UserSession
+import com.example.cacatrackermobileapp.ui.components.ButtonPQ
 import com.example.cacatrackermobileapp.utils.PieChart
 import com.example.cacatrackermobileapp.viewmodels.EstadisticasViewModel
 
@@ -77,18 +80,18 @@ fun EstadisticaScreen(
             ) {
                 Text(
                     text = "Tus incidencias según:",
-                    fontSize = 14.sp,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Black,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
-                ButtonCT(null, null, "Código Postal", {
+                ButtonPQ(null,  41,"Código Postal", {
                     UserSession.id?.let {
                         viewModel.fetchTop5CpByUser(it)
                         selectedChart = "user_cp"
                     }
                 })
                 Spacer(modifier = Modifier.height(8.dp))
-                ButtonCT(null, null, "Calles/Avenidas", {
+                ButtonPQ(null, 41, "Direcciones", {
                     UserSession.id?.let {
                         viewModel.fetchTop5DirByUser(it)
                         selectedChart = "user_dir"
@@ -108,16 +111,16 @@ fun EstadisticaScreen(
             ) {
                 Text(
                     text = "Todas incidencias según:",
-                    fontSize = 14.sp,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Black,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
-                ButtonCT(null, null, "Código Postal", {
+                ButtonPQ(null,41, "Código Postal", {
                     viewModel.fetchTop5CpGlobal()
                     selectedChart = "global_cp"
                 })
                 Spacer(modifier = Modifier.height(8.dp))
-                ButtonCT(null, null, "Calles/Avenidas", {
+                ButtonPQ(null,41, "Direcciones", {
                     viewModel.fetchTop5DirGlobal()
                     selectedChart = "global_dir"
                 })
@@ -133,7 +136,10 @@ fun EstadisticaScreen(
             when (selectedChart) {
                 "user_cp", "global_cp" -> CodigoPostalGraph(codigoPostalData)
                 "user_dir", "global_dir" -> DireccionGraph(direccionData)
-                else -> Text("Seleccione una opción para ver el gráfico.")
+                else ->
+                    Row(Modifier.align(Alignment.Center)) {
+                        Text("Seleccione una opción para ver el gráfico.")
+                    }
             }
         }
 
@@ -175,7 +181,6 @@ fun DireccionGraph(data: List<DireccionCountDTO>) {
             .padding(16.dp)
     )
 }
-
 
 @Preview(showBackground = true)
 @Composable
