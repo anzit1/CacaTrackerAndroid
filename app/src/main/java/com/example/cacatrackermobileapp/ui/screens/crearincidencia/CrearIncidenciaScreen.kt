@@ -41,8 +41,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.AddCircle
@@ -96,7 +99,7 @@ fun CrearIncidenciaScreen(
         }
     }
 
-    // Permission launcher
+    // Launcher de permisos
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -108,12 +111,12 @@ fun CrearIncidenciaScreen(
             }
         } else {
             viewModel.dialogMessage.value =
-                "Permission denied. You can't select images without permission."
+                "Permiso rechazado. Necesitas aceptar los permisos solicitados."
         }
     }
 
 
-    // Function to handle image selection with permission check
+    // Funcion para gerir permisos de acceso al explorador de imagenes
     fun handleImageSelection() {
         val permissionToRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             Manifest.permission.READ_MEDIA_IMAGES
@@ -137,13 +140,13 @@ fun CrearIncidenciaScreen(
                 activity,
                 permissionToRequest
             ) -> {
-                // Show rationale dialog
+                // Dialogo de Permiso
                 scope.launch {
                     viewModel.dialogMessage.value =
                         "The app needs permission to access your photos to select images. " +
                                 "Please grant the permission in the next dialog."
-                    // Request permission after user acknowledges the rationale
-                    delay(1000) // Small delay to ensure dialog is shown
+                    // Hace un request de permiso
+                    delay(1000)
                     permissionLauncher.launch(permissionToRequest)
                 }
             }
@@ -166,6 +169,7 @@ fun CrearIncidenciaScreen(
         }
     }
 
+    // Funcion activar la camara del móvil
     fun handleCameraCapture() {
         val permission = Manifest.permission.CAMERA
 
@@ -183,8 +187,6 @@ fun CrearIncidenciaScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -306,7 +308,6 @@ fun CrearIncidenciaScreen(
                         }
                     }
 
-
                     Spacer(modifier = Modifier.height(24.dp))
                     Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
                         ButtonCT(170, null, "Crear", { viewModel.crearIncidencia(context) })
@@ -315,8 +316,6 @@ fun CrearIncidenciaScreen(
             }
             BotInfoBar("Volver", onVolverClick)
         }
-
-
 
         if (isLoading) {
             Box(
@@ -347,24 +346,6 @@ fun CrearIncidenciaScreen(
         }
     }
 }
-
-@Composable
-fun SelectPhotoButton(viewModel: CrearIncViewModel) {
-    val context = LocalContext.current
-
-    val pickMediaLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia()
-    ) { uri: Uri? ->
-        if (uri != null) {
-            viewModel.subirFoto(uri, context)
-        }
-    }
-
-    ButtonPQImg(200, "Seleccionar Foto", {
-        pickMediaLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-    }, Icons.Default.Search)
-}
-
 
 @Preview(showBackground = true)
 @Composable

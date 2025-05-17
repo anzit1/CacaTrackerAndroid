@@ -115,13 +115,6 @@ class CrearIncViewModel() : ViewModel() {
         codigoPostalInput.value = newValue
     }
 
-    fun encodeImageToBase64(uri: Uri, context: Context): String? {
-        val inputStream = context.contentResolver.openInputStream(uri)
-        val byteArray = inputStream?.use { it.readBytes() }
-        val encodedImage = byteArray?.let { Base64.encodeToString(it, Base64.NO_WRAP) }
-        return encodedImage
-    }
-
     fun crearIncidencia(context: Context) {
         if (nombreArtInput.value.isBlank() ||
             direccionInput.value.isBlank() ||

@@ -21,6 +21,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+// Retirado de GITHUB
+// https://github.com/developerchunk/Custom-Pie-Chart-Jetpack-Compose/tree/main
+//
+
 @Composable
 fun PieChart(
     data: Map<String, Int>,
@@ -112,78 +116,6 @@ fun PieChart(
                     modifier = Modifier.padding(vertical = 2.dp)
                 )
             }
-        }
-    }
-}
-
-
-
-@Composable
-fun DetailsPieChartItem(
-    data: Pair<String, Int>,
-    height: Dp = 45.dp,
-    color: Color
-) {
-
-    Surface(
-        modifier = Modifier
-            .padding(vertical = 10.dp, horizontal = 40.dp),
-        color = Color.Transparent
-    ) {
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Box(
-                modifier = Modifier
-                    .background(
-                        color = color,
-                        shape = RoundedCornerShape(10.dp)
-                    )
-                    .size(height)
-            )
-
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    modifier = Modifier.padding(start = 15.dp),
-                    text = data.first,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 22.sp,
-                    color = Color.Black
-                )
-                Text(
-                    modifier = Modifier.padding(start = 15.dp),
-                    text = data.second.toString(),
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 22.sp,
-                    color = Color.Gray
-                )
-            }
-
-        }
-
-    }
-
-}
-
-@Composable
-fun DetailsPieChart(
-    data: Map<String, Int>,
-    colors: List<Color>
-) {
-    Column(
-        modifier = Modifier
-            .padding(top = 16.dp)
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        data.entries.forEachIndexed { index, entry ->
-            DetailsPieChartItem(
-                data = entry.toPair(),
-                color = colors[index % colors.size]
-            )
         }
     }
 }

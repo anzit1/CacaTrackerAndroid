@@ -10,10 +10,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
@@ -100,7 +103,8 @@ fun LoginScreen(
             .fillMaxSize()
             .padding(defaultPadding)
             .background(Color(0xFFf7f7f7))
-            .systemBarsPadding(),
+            .systemBarsPadding()
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         HeaderText(
@@ -133,6 +137,7 @@ fun LoginScreen(
         Row(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
+
         ) {
             TextButton(
                 onClick = { showForgotPasswordDialog = true },
@@ -144,22 +149,23 @@ fun LoginScreen(
 
         Spacer(Modifier.height(itemSpacing * 3))
 
-        if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.size(48.dp))
-        } else {
-            ButtonCT(null, null, "Login", {
-                viewModel.login()
-                if (loginSuccess) {
-                    onLoginClick()
-                }
-            })
+        Column (modifier = Modifier.imePadding()){
+            if (isLoading) {
+                CircularProgressIndicator(modifier = Modifier.size(48.dp))
+            } else {
+                ButtonCT(null, null, "Login", {
+                    viewModel.login()
+                    if (loginSuccess) {
+                        onLoginClick()
+                    }
+                })
+            }
+
+            Spacer(Modifier.height(itemSpacing * 3))
+            // ** REGISTRAR **
+            //
+            ButtonCT(null, null, "Crear cuenta", onRegisterClick)
         }
-
-        Spacer(Modifier.height(itemSpacing * 3))
-        // ** REGISTRAR **
-        //
-        ButtonCT(null, null, "Crear cuenta", onRegisterClick)
-
     }
 
     if (showForgotPasswordDialog) {
